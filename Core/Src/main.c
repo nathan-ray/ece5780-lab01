@@ -21,58 +21,58 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void) {
-    HAL_Init(); // Reset of all peripherals, init the Flash and Systick
-    SystemClock_Config(); //Configure the system clock
-
+	* Enables the Orange and Green LEDs and alternates between
+	* high and low for each button.
+	*/
+void enableOrangeGreen() {
 		// ORANGE -> 9 -> 19-18
 		// GREEN 	-> 8 -> 17-16
+	
+		// PC9 ENABLE
+		GPIOC->MODER &= ~(1 << 19);	// clear
+		GPIOC->MODER |= (1 << 18);	// enable
+		
+		// PC8 ENABLE
+		GPIOC->MODER &= ~(1 << 17);	// clear
+		GPIOC->MODER |= (1 << 16);	// enable
+		
+		// push-pull output for 9 and 8
+		GPIOC->OTYPER &= ~(1 << 9);	// enable
+		GPIOC->OTYPER &= ~(1 << 8);	// enable
+		
+		
+		// SPEED PC9
+		GPIOC->OSPEEDR &= ~(1 << 18);	// clear
+		// SPEED PC8
+		GPIOC->OSPEEDR &= ~(1 << 16);	// clear
+		
+		// pull-up/down resistors
+		GPIOC->PUPDR  &= ~(1 << 19);	// clear
+		GPIOC->PUPDR  &= ~(1 << 18);	// clear
+		
+		GPIOC->PUPDR  &= ~(1 << 17); 	// clear
+		GPIOC->PUPDR  &= ~(1 << 16); 	// clear
+		
+		// PIN LOGIC 9 and 8
+		GPIOC->ODR &= ~(1 << 9);		// initial low blue
+		GPIOC->ODR |= (1 << 8);			// initial high red
+	
+}
+
+/**
+	* Enables the blue and red LEDs while also using
+	* the button to toggle between them both.
+	*/
+void enableBlueRedWithButton() {
 		// BLUE		-> 7 -> 15-14
 		// RED		-> 6 -> 13-12
 	
-		RCC->AHBENR |= (1 << 19);		// enabling peripheral clock of port C
-		
 		// PC7 ENABLE
 		GPIOC->MODER &= ~(1 << 15);	// clear
 		GPIOC->MODER |= (1 << 14);	// enable
@@ -81,10 +81,9 @@ int main(void) {
 		GPIOC->MODER &= ~(1 << 13);	// clear
 		GPIOC->MODER |= (1 << 12);	// enable
 		
-		// push-pull output
+		// push-pull output for 7 and 6
 		GPIOC->OTYPER &= ~(1 << 7);	// enable
 		GPIOC->OTYPER &= ~(1 << 6);	// enable
-		
 		
 		// SPEED PC7
 		GPIOC->OSPEEDR &= ~(1 << 14);	// clear
@@ -98,12 +97,11 @@ int main(void) {
 		GPIOC->PUPDR  &= ~(1 << 13); 	// clear
 		GPIOC->PUPDR  &= ~(1 << 12); 	// clear
 		
-		// PIN LOGIC
+		// PIN LOGIC 7 and 6
 		GPIOC->ODR &= ~(1 << 7);		// initial low blue
 		GPIOC->ODR |= (1 << 6);			// initial high red
 		
 		// PUSHBUTTON PA0
-		
 		// enable rcc
 		RCC->AHBENR |= (1 << 17);
 		
@@ -117,9 +115,34 @@ int main(void) {
 		// pull down
 		GPIOA->PUPDR |= (1 << 1);
 		GPIOA->PUPDR &= ~(1 << 0);
+		
+}
 
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void) {
+    HAL_Init(); // Reset of all peripherals, init the Flash and Systick
+    SystemClock_Config(); //Configure the system clock
+
+		RCC->AHBENR |= (1 << 19);		// enabling peripheral clock of port C
+		
+		// BLINKY
+		// enableOrangeGreen();
+	
+		// TOGGLE BUTTON
+		enableBlueRedWithButton();
+	
 		uint32_t debouncer = 0;
     while (1) {
+			
+			// BLINKY
+			/*
+			HAL_Delay(200);
+			GPIOC->ODR ^= (1 << 9);
+			GPIOC->ODR ^= (1 << 8);
+			*/
 			
 			// TOGGLE WITH BUTTON
 			debouncer = (debouncer << 1); // Always shift every loop iteration
