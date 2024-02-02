@@ -32,7 +32,7 @@ void SystemClock_Config(void);
 	*/
 void enableOrangeGreen() {
 		// ORANGE -> 9 -> 19-18
-		// GREEN 	-> 8 -> 17-16
+		// GREEN  -> 8 -> 17-16
 	
 		// PC9 ENABLE
 		GPIOC->MODER &= ~(1 << 19);	// clear
