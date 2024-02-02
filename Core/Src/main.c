@@ -60,8 +60,8 @@ void enableOrangeGreen() {
 		GPIOC->PUPDR  &= ~(1 << 16); 	// clear
 		
 		// PIN LOGIC 9 and 8
-		GPIOC->ODR &= ~(1 << 9);		// initial low blue
-		GPIOC->ODR |= (1 << 8);			// initial high red
+		GPIOC->ODR &= ~(1 << 9);		// initial low orange
+		GPIOC->ODR |= (1 << 8);			// initial high green
 	
 }
 
